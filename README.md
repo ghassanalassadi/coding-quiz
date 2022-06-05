@@ -1,1 +1,1 @@
-# general-quiz
+# coding-quiz
