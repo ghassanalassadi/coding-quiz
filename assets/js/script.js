@@ -8,13 +8,18 @@ const highScoreBtn = document.getElementById("high-score-btn");
 const timerElement = document.getElementById("timer");
 const initialsContainer = document.getElementById("initials-field");
 const highScoreContainer = document.getElementById("high-score-container");
+const scoreTable = document.getElementById("score-table");
+const reactionContainer = document.getElementById("reaction-container");
+const reactionToUserAnswer = document.getElementById("answer-reaction");
+const backBtn = document.getElementById("back-btn");
 var finalScore = 0; // initializing score value
-
-// keep track of question number
 let questionNumber = 0;
+var highScores = {};
 var timeLeft;
 
 // array of questions
+
+// part of this code was built with help from a video guide: https://www.youtube.com/watch?v=riDzcEQbX6k
 
 const questionsForQuiz = [
     {
@@ -58,8 +63,18 @@ const questionsForQuiz = [
 
 // calls 'start quiz' function on button press
 startBtn.addEventListener('click', startQuiz);
+highScoreBtn.addEventListener('click', highScoreList);
+backBtn.addEventListener('click', startingPage);
 
 // functions for quiz
+
+function startingPage() {
+    startBtn.classList.remove('hide');
+    highScoreBtn.classList.remove('hide');
+    backBtn.classList.add('hide');
+    initialsContainer.classList.add('hide');
+    highScoreContainer.classList.add('hide');
+}
 
 /*
 Starts the quiz. Removes the start and high score buttons by adding 'hide' to class list
@@ -69,6 +84,7 @@ function startQuiz() {
     startBtn.classList.add('hide');
     highScoreBtn.classList.add('hide');
     questionContainer.classList.remove('hide');
+    questionNumber = 0;
     countdownTimer();
     timeLeft = 60;
     nextQuestion();
@@ -80,7 +96,8 @@ function nextQuestion() {
     showQuestion(questionsForQuiz[questionNumber]);
 }
 
-
+// reveals the question from the array and loads the answers to the buttons
+// also determines which answer is correct based on data from question array
 function showQuestion(quizQuestion) {
     questionElement.innerText = quizQuestion.question;
     quizQuestion.answers.forEach(answer => {
@@ -105,25 +122,29 @@ function resetContainer() {
 // determines what should be done if the answer is correct or incorrect
 function chooseAnswer(event) {
     const chosenAnswer = event.target;
-    const correct = chosenAnswer.dataset.correct;
+    const correctAnswer = chosenAnswer.dataset.correct;
 
-    if (correct) {
-        console.log("Correct!");
+    if (correctAnswer) {
+        reactionContainer.classList.remove('hide');
+        reactionToUserAnswer.innerText = "Correct!";
         endGame();
     } else {
         timeLeft -= 10;
-        console.log("Incorrect!");
+        reactionContainer.classList.remove('hide');
+        reactionToUserAnswer.innerText = "Incorrect!";
         endGame();
     }
 }
 
 // check if final question reached and end game
     function endGame() {
+    reactionContainer.classList.remove('hide');
     if (questionsForQuiz.length > questionNumber + 1) {
         questionNumber++;
         nextQuestion();
     } else {
         console.log("Game Over!");
+        reactionToUserAnswer.innerText = "Game Over!";
         highScoreSave();
         finalScore = timeLeft;
         clearInterval(timer);
@@ -139,12 +160,13 @@ function countdownTimer() {
             finalScore = 0;
             clearInterval(timer);
             console.log("Game Over!");
+            reactionToUserAnswer.innerText = "Game Over!";
             highScoreSave();
         }
     }, 1000)
 }
 
-
+// saves high scores to a dictionary
 function highScoreSave() {
     questionContainer.classList.add('hide');
     initialsContainer.classList.remove('hide');
@@ -152,7 +174,7 @@ function highScoreSave() {
     
     submitBtn.addEventListener('click', function(){
         const initialsTextbox = document.getElementById("initials-textbox").value;
-        var highScores = {
+        highScores = {
             initials: initialsTextbox,
             score: finalScore.toString()
     }
@@ -162,6 +184,17 @@ function highScoreSave() {
     })
 }
 
+// adds high score to table
 function highScoreList() {
+    startBtn.classList.add('hide');
+    highScoreBtn.classList.add('hide');
+    backBtn.classList.remove('hide');
     initialsContainer.classList.add('hide');
+    highScoreContainer.classList.remove('hide');
+    // use table elements to add score to table
+    var addRow = scoreTable.insertRow(1);
+    var initialsCell = addRow.insertCell(0);
+    var scoreCell = addRow.insertCell(1);
+    initialsCell.innerHTML = highScores.initials;
+    scoreCell.innerHTML = highScores.score;
 }
