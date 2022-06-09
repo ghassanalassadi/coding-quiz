@@ -14,12 +14,12 @@ const reactionToUserAnswer = document.getElementById("answer-reaction");
 const backBtn = document.getElementById("back-btn");
 var finalScore = 0; // initializing score value
 let questionNumber = 0;
-var highScores = {};
+var highScores = {}; // declare dict to allow for global use
 var timeLeft;
 
 // array of questions
 
-// part of this code was built with help from a video guide: https://www.youtube.com/watch?v=riDzcEQbX6k
+// some of the quiz functionality of this code was built with help from a video guide: https://www.youtube.com/watch?v=riDzcEQbX6k
 
 const questionsForQuiz = [
     {
@@ -84,7 +84,8 @@ function startQuiz() {
     startBtn.classList.add('hide');
     highScoreBtn.classList.add('hide');
     questionContainer.classList.remove('hide');
-    questionNumber = 0;
+    reactionToUserAnswer.innerText = "";
+    questionNumber = 0; // reset question number index every time the quiz is started
     countdownTimer();
     timeLeft = 60;
     nextQuestion();
@@ -99,10 +100,10 @@ function nextQuestion() {
 // reveals the question from the array and loads the answers to the buttons
 // also determines which answer is correct based on data from question array
 function showQuestion(quizQuestion) {
-    questionElement.innerText = quizQuestion.question;
+    questionElement.innerText = quizQuestion.question; // replace placeholder text with text from a question in the question array
     quizQuestion.answers.forEach(answer => {
         const answerBtn = document.createElement('button');
-        answerBtn.innerText = answer.text;
+        answerBtn.innerHTML = answer.text; // replace placeholder text with text from the answer list in the question array
         answerBtn.classList.add('answer-btn');
         if (answer.correct) {
             answerBtn.dataset.correct = answer.correct;
@@ -136,7 +137,7 @@ function chooseAnswer(event) {
     }
 }
 
-// check if final question reached and end game
+// check if final question reached and end game. if not, continue quiz
     function endGame() {
     reactionContainer.classList.remove('hide');
     if (questionsForQuiz.length > questionNumber + 1) {
